@@ -4,9 +4,6 @@
     "config:recommended"
   ],
   "timezone": "Europe/Stockholm",
-  "schedule": [
-    "before 6am on monday"
-  ],
   "packageRules": [
     {
       "matchUpdateTypes": ["minor", "patch"],
