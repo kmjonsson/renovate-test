@@ -13,6 +13,15 @@
     {
       "matchUpdateTypes": ["major"],
       "automerge": false
+    },
+    {
+      "matchManagers": ["npm"],
+      "matchUpdateTypes": ["minor", "patch"],
+      "groupName": "npm-beroenden (minor & patch)"
+    },
+    {
+      "matchManagers": ["custom.regex"],
+      "groupName": "myapp-version"
     }
   ],
   "lockFileMaintenance": {
@@ -24,17 +33,16 @@
       "defaultRegistryUrlTemplate": "file://versions.yaml",
       "format": "yaml",
       "transformTemplates": [
-        "{\"releases\": versions.{\"version\": version, \"releaseTimestamp\": released}}"
+        "{\"releases\": $lookup($, \"{{packageName}}\").{\"version\": version, \"releaseTimestamp\": released}}"
       ]
     }
   },
   "customManagers": [
     {
       "customType": "regex",
-      "description": "Uppdatera VERSION i version.txt",
+      "description": "Uppdatera paketversioner i version.txt (format: paketnamn-vX.Y.Z, en per rad)",
       "managerFilePatterns": ["/(^|/)version\\.txt$/"],
-      "matchStrings": ["VERSION=(?<currentValue>\\S+)"],
-      "depNameTemplate": "myapp",
+      "matchStrings": ["(?<depName>[\\w-]+)-v(?<currentValue>\\d+\\.\\d+\\.\\d+)"],
       "datasourceTemplate": "custom.local-versions",
       "versioningTemplate": "semver"
     }

@@ -1,7 +1,17 @@
-versions:
+foo:
   - version: "1.2.3"
     released: "2026-01-15T00:00:00Z"
   - version: "1.3.0"
     released: "2026-03-02T00:00:00Z"
   - version: "1.4.1"
     released: "2026-05-20T00:00:00Z"
+bar:
+  - version: "2.0.0"
+    released: "2026-02-01T00:00:00Z"
+  - version: "2.1.0"
+    released: "2026-04-10T00:00:00Z"
+baz:
+  - version: "0.9.5"
+    released: "2026-03-01T00:00:00Z"
+  - version: "1.0.0"
+    released: "2026-06-01T00:00:00Z"
