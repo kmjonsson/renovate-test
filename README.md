@@ -33,21 +33,48 @@ Detta kör Renovate mot arbetskatalogen utan att behöva GitHub/GitLab och lista
 vilka uppdateringar den hittar. Utan ett Git-repo körs bara beroende-extraktionen (verifierar
 att `renovate.json` och `package.json` tolkas korrekt) men inga filer skrivs.
 
-### Alternativ 2: Via GitHub
+### Alternativ 2: Via GitHub (verifierat fungerande)
+
+**A) Renovate-appen (helt automatiskt, inget lokalt behövs)**
 
 1. Skapa ett repo på GitHub och pusha upp innehållet i den här mappen.
 2. Installera [Renovate-appen](https://github.com/apps/renovate) på repot (eller aktivera
    Renovate/Mend-integrationen om ni använder self-hosted GitHub/GitLab).
 3. Renovate hittar `renovate.json`, skapar en initial "Configure Renovate"-PR, och därefter
-   PRs för varje utdaterat beroende enligt schemat i `renovate.json`.
+   PRs för varje utdaterat beroende.
+
+**B) Renovate CLI mot GitHub (bra för att testa configen innan ni installerar appen)**
+
+```bash
+export RENOVATE_TOKEN=ghp_xxx   # ett Personal Access Token, se not nedan
+npx renovate <ditt-github-användarnamn>/<repo-namn>
+```
+
+Detta är testat och fungerar: Renovate klonar repot, skapar riktiga grenar och öppnar PRs
+mot GitHub (t.ex. "Update dependency chalk to v6", "Update dependency express to v5") som ni
+granskar och mergar precis som vanliga PRs.
+
+> **Vanligt fel:** Renovate läser env-variabeln **`RENOVATE_TOKEN`** (eller flaggan
+> `--token=...`), *inte* `GITHUB_TOKEN`. Har ni bara satt `GITHUB_TOKEN` misslyckas körningen
+> tyst med `"You must configure a GitHub token"` trots att en token finns i miljön.
+>
+> Token behöver (fine-grained PAT): **Contents: Read & write** och **Pull requests: Read &
+> write** för repot. Vill ni även ha Renovates "Dependency Dashboard"-issue behövs dessutom
+> **Issues: Read & write** – annars loggas en ofarlig `403 Forbidden`-varning när Renovate
+> försöker skapa/uppdatera den issuen, men PRs skapas ändå.
+>
+> **PRs saknas för vissa beroenden?** `config:recommended` sätter `prHourlyLimit: 2` som
+> standard, dvs. max 2 nya PRs per körning/timme. Kör CLI:t igen efter en timme (eller höj/ta
+> bort `prHourlyLimit` i `renovate.json` för testning) för att få resten.
 
 ## Om `renovate.json`
 
-- `extends: ["config:recommended"]` – använder Renovates rekommenderade grundinställningar.
-- `schedule` – kör bara uppdateringar natt mot måndag (Europe/Stockholm-tid).
+- `extends: ["config:recommended"]` – använder Renovates rekommenderade grundinställningar
+  (bl.a. `prHourlyLimit: 2`, se not ovan).
+- `timezone` – används för schemalagda delar av configen (t.ex. `lockFileMaintenance`).
 - `packageRules` – auto-mergar minor/patch-uppdateringar men kräver manuell granskning av
   major-uppdateringar.
-- `lockFileMaintenance` – håller `package-lock.json` uppdaterad även när inga
-  `package.json`-versioner ändras.
+- `lockFileMaintenance` – håller `package-lock.json` uppdaterad (natt mot måndag) även när
+  inga `package.json`-versioner ändras.
 
 Justera reglerna efter behov – det här är bara ett exempel att utgå från.

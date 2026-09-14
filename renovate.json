@@ -18,5 +18,25 @@
   "lockFileMaintenance": {
     "enabled": true,
     "schedule": ["before 6am on monday"]
-  }
+  },
+  "customDatasources": {
+    "local-versions": {
+      "defaultRegistryUrlTemplate": "file://versions.yaml",
+      "format": "yaml",
+      "transformTemplates": [
+        "{\"releases\": versions.{\"version\": version, \"releaseTimestamp\": released}}"
+      ]
+    }
+  },
+  "customManagers": [
+    {
+      "customType": "regex",
+      "description": "Uppdatera VERSION i version.txt",
+      "managerFilePatterns": ["/(^|/)version\\.txt$/"],
+      "matchStrings": ["VERSION=(?<currentValue>\\S+)"],
+      "depNameTemplate": "myapp",
+      "datasourceTemplate": "custom.local-versions",
+      "versioningTemplate": "semver"
+    }
+  ]
 }
