@@ -12,6 +12,9 @@
     "express": "^5.0.0",
     "lodash": "^4.17.0"
   },
+  "engines": {
+    "node": ">=18"
+  },
   "devDependencies": {
     "nodemon": "^2.0.4"
   }
